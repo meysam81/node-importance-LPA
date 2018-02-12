@@ -26,11 +26,10 @@ int main(int argc, char *argv[])
     }
 
     // start of the NIBLPA
-    if (network.computeKShell())
-        if (network.computeNodeInfluence())
-            if (network.computeLabelInfluence())
-                if (network.computeNewLabels())
-                    network.writeResultsToFile(outputPath);
+    if (network.computeNodeInfluence())
+        if (network.computeLabelInfluence())
+            if (network.computeNewLabels())
+                network.writeResultsToFile(outputPath);
     // end of the NIBLPA
 
     return 0;

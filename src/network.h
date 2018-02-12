@@ -28,8 +28,6 @@ public:
     Network();
     bool initialize(string inputPath);
 
-    bool computeKShell();
-
     bool computeNodeInfluence();
 
     bool computeLabelInfluence();

@@ -86,103 +86,13 @@ bool Network::initialize(string inputPath)
 
 }
 
-bool Network::computeKShell()
-{
-    // to edit the degree
-    Node copyNode[numberOfNodes + 1];
-    for (int i = 1; i <= numberOfNodes; ++i)
-        copyNode[i] = nodes[i];
-
-
-
-    /* to edit (remove) the edges as a process
-     * of computing the k-shell decomposition
-     */
-    SparseMatrix<int> copyEdges(*edges);
-
-
-
-    int currentK = 1;
-
-    bool endLoop;
-
-
-
-
-    do
-    {
-        endLoop = true;
-
-        bool goToNextK = true;
-
-
-        for (int cntr = 1; cntr <= numberOfNodes; ++cntr)
-        {
-
-
-            // calculate this function ONCE
-            if (copyNode[cntr].degree != 0)
-                endLoop = false;
-            else // skip nodes with zero degree
-                continue;
-
-
-            if (copyNode[cntr].degree == currentK)
-            {
-                int column;
-                if (copyEdges.removeAnyEdge(cntr, column))
-                {
-                    copyNode[cntr].degree--;
-                    copyNode[cntr].kShell++;
-
-                    goToNextK = false;
-                }
-
-                // remove the correspondent indirected edge as well
-                if (copyEdges.removeEdge(column, cntr))
-                {
-                    copyNode[column].degree--;
-                    copyNode[column].kShell++;
-
-                }
-            }
-        }
-
-
-        if (goToNextK)
-            currentK++;
-
-
-    }while (!endLoop && currentK <= numberOfNodes);
-
-
-    // add the nodes with zero k-shell to the minimum shell
-    int minKShell = copyNode[1].kShell;
-    for (int i = 2; i <= numberOfNodes; ++i) // compute the minimum
-        if (minKShell > copyNode[i].kShell)
-            minKShell = copyNode[i].kShell;
-
-    for (int i = 1; i <= numberOfNodes; ++i) // assign the minimum
-        if (copyNode[i].kShell == 0)
-            copyNode[i].kShell = minKShell;
-
-
-    for (int i = 1; i <= numberOfNodes; ++i) // assign the copy back to origin
-        nodes[i].kShell = copyNode[i].kShell;
-
-
-
-
-    return true;
-}
-
 bool Network::computeNodeInfluence()
 {
     srand(QTime::currentTime().second());
     float alpha = (float) rand() / RAND_MAX;
     for (int i = 1; i <= numberOfNodes; ++i)
     {
-        nodes[i].nodeInfluence = nodes[i].kShell; // NI(i) = Ks(i) + ...
+        nodes[i].nodeInfluence = nodes[i].degree; // NI(i) = Ks(i) + ...
 
         float tmpSum = 0;
         for (int i = 1; i <= numberOfNodes; ++i)
